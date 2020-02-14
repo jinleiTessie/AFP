@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import pickle
-import pdb
+from pdb import set_trace as st
 import sys
 from datetime import datetime
 import pandas as pd
@@ -10,6 +10,7 @@ import pickle
 import requests
 from datetime import timedelta
 from itertools import combinations
+import seaborn as sns
 
 class DataStore:
     
@@ -37,6 +38,7 @@ class DataStore:
             sectors.append(sector)
         symbols = [s.split('\n')[0] for s in tickers]
         symbols = [s.replace('.','/') for s in symbols]
+        sectors = [s.replace('\n','') for s in sectors]
     #         symbols_df = pd.DataFrame(map(lambda x: x.replace('.','/') + ' US EQUITY',symbols),columns = ['ticker'])
     #         symbols_df.to_excel('ticker.xlsx','Sheet1')
         return [symbols, sectors]
