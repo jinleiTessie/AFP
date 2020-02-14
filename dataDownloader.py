@@ -18,7 +18,8 @@ class DataStore:
         self.enddate = pd.to_datetime(endDate, format='%Y%m%d', errors='ignore')
         self.adjusted = adjusted
         
-        self.ticker_list = self.save_sp500_tickers() 
+        self.ticker_list = self.save_sp500_tickers()[0] 
+        self.ticker_df = pd.DataFrame({'Symbol':self.save_sp500_tickers()[0],'Industry':self.save_sp500_tickers()[1]})
         self.data = self.load_data()
         self.pair_list = self.get_pairs()
     
@@ -27,14 +28,18 @@ class DataStore:
         soup = bs.BeautifulSoup(resp.text, 'lxml')
         table = soup.find('table', {'class': 'wikitable sortable'})
         tickers = []
+        sectors = []
         for row in table.findAll('tr')[1:]:
-            ticker = row.findAll('td')[0].text
+            temp = row.findAll('td')
+            ticker = temp[0].text
+            sector = temp[3].text
             tickers.append(ticker)
+            sectors.append(sector)
         symbols = [s.split('\n')[0] for s in tickers]
         symbols = [s.replace('.','/') for s in symbols]
-#         symbols_df = pd.DataFrame(map(lambda x: x.replace('.','/') + ' US EQUITY',symbols),columns = ['ticker'])
-#         symbols_df.to_excel('ticker.xlsx','Sheet1')
-        return symbols
+    #         symbols_df = pd.DataFrame(map(lambda x: x.replace('.','/') + ' US EQUITY',symbols),columns = ['ticker'])
+    #         symbols_df.to_excel('ticker.xlsx','Sheet1')
+        return [symbols, sectors]
     
     def load_data(self):
         if self.adjusted:
